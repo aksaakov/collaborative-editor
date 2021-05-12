@@ -25,7 +25,7 @@ function App() {
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container maxWidth="sm">
+      <Container maxWidth="md" className="container"> 
         <form className={classes.root} noValidate autoComplete="off">
         <div>
           <TextField
@@ -33,7 +33,6 @@ function App() {
             label="Hello World"
             multiline
             rows={20}
-            defaultValue="Default Value"
             variant="outlined"
           />
         </div>
