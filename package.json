@@ -34,7 +34,7 @@
     "nodemon": "^2.0.7"
   },
   "scripts": {
-    "start": "host=localhost PORT=1234 npx y-websocket-server & node ./server.js",
+    "start": "host=collaborative-editor-yjs.herokuapp.com npx y-websocket-server & node ./server.js",
     "dev": "react-scripts start",
     "build": "rm -rf build/* && webpack --mode=production && cp -r public/* build",
     "test": "react-scripts test",
