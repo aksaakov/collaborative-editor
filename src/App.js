@@ -39,7 +39,7 @@ function App() {
     attachQuillRefs()
     const ydoc = new Y.Doc()
   
-    const provider = new WebsocketProvider("ws://collaborative-editor-yjs.herokuapp.com/", 'collaboration', ydoc)
+    const provider = new WebsocketProvider("ws://collaborative-editor-yjs.herokuapp.com", 'collaboration', ydoc)
   
     // Define a shared text type on the document
     const ytext = ydoc.getText('editor')
