@@ -1,10 +1,16 @@
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import React from 'react';
+import React, { useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import * as Y from 'yjs'
+import { WebsocketProvider } from 'y-websocket'
+import { QuillBinding } from 'y-quill'
+import Quill from 'quill';
+import QuillCursors from 'quill-cursors'
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,28 +21,54 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+Quill.register('modules/cursors', QuillCursors)
+
 function App() {
   const classes = useStyles();
-  const [value, setValue] = React.useState('Controlled');
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
+  let quillRef=null;
+  let reactQuillRef=null;
+  // const [value, setValue] = React.useState('');
+  // const handleChange = (event) => {
+  //   setValue(event.target.value);
+  // };
+  // const editorContainer = document.createElement('div')
+  // editorContainer.setAttribute('id', 'editor')
+  // document.body.insertBefore(editorContainer, null)
+
+  useEffect(()=>{
+    attachQuillRefs()
+    const ydoc = new Y.Doc()
+  
+    const provider = new WebsocketProvider("ws://localhost:3030", 'collaboration', ydoc)
+  
+    // Define a shared text type on the document
+    const ytext = ydoc.getText('editor')
+  
+    // "Bind" the quill editor to a Yjs text type.
+    new QuillBinding(ytext, quillRef, provider.awareness)
+
+    provider.awareness.setLocalStateField('user', {
+      name: 'Typing Jimmy',
+      color: 'blue'
+    })
+  }, [])
+
+  const attachQuillRefs = () => {
+    if (typeof reactQuillRef.getEditor !== 'function') return;
+    quillRef = reactQuillRef.getEditor();
+  }
 
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
-        <form className={classes.root} noValidate autoComplete="off">
-        <div>
-          <TextField
-            id="outlined-multiline-static"
-            label="Hello World"
-            multiline
-            rows={20}
-            variant="outlined"
-          />
-        </div>
-     </form>
+        {/* <form className={classes.root} noValidate autoComplete="off">
+        </form> */}
+        <ReactQuill 
+          ref={(el) => { reactQuillRef = el }}
+          theme={'snow'} 
+          modules={{ cursors:true }}  
+        />
       </Container>
     </React.Fragment>
   );
