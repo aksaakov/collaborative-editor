@@ -34,7 +34,7 @@
     "webpack-cli": "^4.7.0"
   },
   "scripts": {
-    "start": "yarn build & HOST=collaborative-editor-yjs.herokuapp.com PORT=3030 npx y-websocket-server & nodemon --exec babel-node ./server.js",
+    "start": "yarn build & HOST=localhost PORT=1234 npx y-websocket-server & nodemon --exec babel-node ./server.js",
     "build": "rm -rf build && webpack --mode=development && cp -r public/* build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

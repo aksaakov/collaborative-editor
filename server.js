@@ -22,7 +22,7 @@ app.listen(port, function () {
 
 const WebSocket = require('ws');
 
-const wss = new WebSocket.Server({ port: 3030 });
+const wss = new WebSocket.Server({ port: 1235 });
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(data) {
