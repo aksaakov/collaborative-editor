@@ -38,8 +38,11 @@ function App() {
   useEffect(()=>{
     attachQuillRefs()
     const ydoc = new Y.Doc()
-  
-    const provider = new WebsocketProvider("ws://localhost:3030", 'collaboration', ydoc)
+
+    const provider = new WebsocketProvider("ws://localhost:2222", 'collaboration', ydoc)
+    provider.on('status', event => {
+      console.log('websocket provider: ', event.status) // logs "connected" or "disconnected"
+    })
   
     // Define a shared text type on the document
     const ytext = ydoc.getText('editor')
