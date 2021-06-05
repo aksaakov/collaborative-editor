@@ -1,1 +1,1 @@
-web: yarn build & PORT=1234 npx y-websocket-server & node ./server.js
+web: DEBUG=y*,-y:connector-message server.js
