@@ -41,7 +41,7 @@
     "build": "rm -rf build/* && webpack --mode=production && cp -r public/* build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "preinstall": "HOST=localhost PORT=2222 npx y-websocket-server"
+    "preinstall": "HOST=collaborative-editor-yjs.herokuapp.com PORT=2222 npx y-websocket-server"
   },
   "eslintConfig": {
     "extends": [
