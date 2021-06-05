@@ -39,7 +39,7 @@ function App() {
     attachQuillRefs()
     const ydoc = new Y.Doc()
 
-    const provider = new WebsocketProvider("ws://localhost:2222", 'collaboration', ydoc)
+    const provider = new WebsocketProvider("ws://collaborative-editor-yjs.herokuapp.com:2222", 'collaboration', ydoc)
     provider.on('status', event => {
       console.log('websocket provider: ', event.status) // logs "connected" or "disconnected"
     })
@@ -54,6 +54,10 @@ function App() {
       name: 'Typing Jimmy',
       color: 'blue'
     })
+
+    provider.on('message', function incoming(data) {
+      console.log(data);
+    });
   }, [])
 
   const attachQuillRefs = () => {

@@ -32,11 +32,11 @@ var server = app.listen(app.get('port'), function() {
   console.log('listening on port ', server.address().port);
 });
 
-// Object.assign(global, { WebSocket: require('ws') });
-const WebSocket = require('ws');
+// // Object.assign(global, { WebSocket: require('ws') });
+// const WebSocket = require('ws');
 
-const wss = new WebSocket.Server({ port: 2222 });
+// const wss = new WebSocket.Server({ port: 2222 });
 
-wss.on('connection', function connection(ws) {
-  console.log('ws. connected.')
-});
+// wss.on('connection', function connection(ws) {
+//   console.log('ws. connected.')
+// });
