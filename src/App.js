@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import * as Y from 'yjs'
-import { WebsocketProvider } from 'y-websocket'
+import { WebrtcProvider } from 'y-webrtc'
 import { QuillBinding } from 'y-quill'
 import Quill from 'quill';
 import QuillCursors from 'quill-cursors'
@@ -39,11 +39,9 @@ function App() {
     attachQuillRefs()
     const ydoc = new Y.Doc()
 
-    const provider = new WebsocketProvider("ws://localhost:1234", 'collaboration', ydoc)
-    provider.on('status', event => {
-      console.log('websocket provider: ', event.status) // logs "connected" or "disconnected"
-    })
-  
+    // const provider = new WebsocketProvider("ws://localhost:1234", 'collaboration', ydoc)
+    const provider = new WebrtcProvider('your-room-name', ydoc)
+
     // Define a shared text type on the document
     const ytext = ydoc.getText('editor')
   
