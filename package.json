@@ -40,7 +40,7 @@
     "build": "rm -rf build/* && webpack --mode=production && cp -r public/* build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postdeploy": "host=0.0.0.0 port=443 node ./node_modules/y-websocket/bin/server.js"
+    "heroku-postdeploy": "host=0.0.0.0 port=443 node ./node_modules/y-websocket/bin/server.js"
   },
   "eslintConfig": {
     "extends": [
