@@ -40,7 +40,7 @@
     "build": "rm -rf build/* && webpack --mode=production && cp -r public/* build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "heroku-postbuild": "HOST=localhost PORT=1234 node ./node_modules/y-websocket/bin/server.js"
+    "heroku-postbuild": "node ./node_modules/y-websocket/bin/server.js"
   },
   "eslintConfig": {
     "extends": [
