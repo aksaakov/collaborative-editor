@@ -39,7 +39,7 @@ function App() {
     attachQuillRefs()
     const ydoc = new Y.Doc()
 
-    const provider = new WebsocketProvider("wss://collaborative-editor-yjs.herokuapp.com/", 'collaboration', ydoc)
+    const provider = new WebsocketProvider("wss://collaborative-editor-yjs.herokuapp.com", 'collaboration', ydoc)
     provider.on('status', event => {
       console.log('websocket provider: ', event.status) // logs "connected" or "disconnected"
     })
