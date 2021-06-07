@@ -5,6 +5,7 @@ import React, { useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import * as Y from 'yjs'
+import { IndexeddbPersistence } from 'y-indexeddb'
 import { WebrtcProvider } from 'y-webrtc'
 import { QuillBinding } from 'y-quill'
 import Quill from 'quill';
@@ -35,27 +36,31 @@ function App() {
   // editorContainer.setAttribute('id', 'editor')
   // document.body.insertBefore(editorContainer, null)
 
+  const ydoc = new Y.Doc()
+
+  // const provider = new WebsocketProvider("ws://localhost:1234", 'collaboration', ydoc)
+  const indexeddbProvider = new IndexeddbPersistence('y-text-sync', ydoc)
+  const webrtcProvider = new WebrtcProvider('count-demo', ydoc)
+
+
+  indexeddbProvider.on('synced', () => {
+    console.log('content from the database is loaded')
+  })
+
+  // Define a shared text type on the document
+
   useEffect(()=>{
     attachQuillRefs()
-    const ydoc = new Y.Doc()
-
-    // const provider = new WebsocketProvider("ws://localhost:1234", 'collaboration', ydoc)
-    const provider = new WebrtcProvider('your-room-name', ydoc)
-
-    // Define a shared text type on the document
+   
     const ytext = ydoc.getText('editor')
   
     // "Bind" the quill editor to a Yjs text type.
-    new QuillBinding(ytext, quillRef, provider.awareness)
+    new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
 
-    provider.awareness.setLocalStateField('user', {
+    webrtcProvider.awareness.setLocalStateField('user', {
       name: 'Typing Jimmy',
       color: 'blue'
     })
-
-    provider.on('message', function incoming(data) {
-      console.log(data);
-    });
   }, [])
 
   const attachQuillRefs = () => {
