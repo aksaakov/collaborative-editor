@@ -12,6 +12,7 @@ import Quill from 'quill';
 import QuillCursors from 'quill-cursors'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+const { uniqueNamesGenerator, colors, animals, adjectives } = require('unique-names-generator');
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,9 +58,12 @@ function App() {
     // "Bind" the quill editor to a Yjs text type.
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
 
+    const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, }); // big_red_donkey
+    const randomColor = uniqueNamesGenerator({ dictionaries: [colors], length }); // big_red_donkey
+
     webrtcProvider.awareness.setLocalStateField('user', {
-      name: 'Typing Jimmy',
-      color: 'blue'
+      name: randomName,
+      color: randomColor
     })
   }, [])
 
