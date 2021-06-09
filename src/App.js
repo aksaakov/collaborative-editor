@@ -12,65 +12,59 @@ import Quill from 'quill';
 import QuillCursors from 'quill-cursors'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import * as awarenessProtocol from 'y-protocols/awareness.js'
 const { uniqueNamesGenerator, colors, animals, adjectives } = require('unique-names-generator');
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: '100%',
-    },
-  },
-}));
 
 Quill.register('modules/cursors', QuillCursors)
 
 function App() {
-  const classes = useStyles();
   let quillRef=null;
   let reactQuillRef=null;
   const [username, setUsername] = useState('');
 
-  const colors = [
+  // name randomiser
+  const customColors = [
     'green', 'blue', 'red', 'yellow', 'orange', 'pink', 'purple'
   ]
-  const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, }); // big_red_donkey
-  const randomColor = uniqueNamesGenerator({ dictionaries: [colors], length: 1 }); // big_red_donkey
+  const randomColor = uniqueNamesGenerator({ dictionaries: [customColors], length: 1 }); // big_red_donkey
 
-  const ydoc = new Y.Doc()
-
-  const indexeddbProvider = new IndexeddbPersistence('y-text-sync', ydoc)
-  const webrtcProvider = new WebrtcProvider('y-text-sync', ydoc)
-
-  indexeddbProvider.on('synced', () => {
-    console.log('content from the database is loaded')
-  })
-  // indexeddbProvider.del('username')
-  
-  indexeddbProvider.get('username').then(function(username) {
-    if (username) {
-      setUsername(username)
-    } else {
-      indexeddbProvider.set('username', randomName)
-      console.log('username was set to ' + username)
-    }
-  }, function(err) {
-    console.log('no username', err); // Error: "It broke"
-    
-  });
-  
   useEffect(()=>{
     attachQuillRefs()
-   
-    const ytext = ydoc.getText('editor')
-  
-    // "Bind" the quill editor to a Yjs text type.
-    new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
+    const ydoc = new Y.Doc()
 
-    webrtcProvider.awareness.setLocalStateField('user', {
-      name: randomName,
-      color: randomColor
+    // webrtc
+    const webrtcOpts = { 
+      filterBcConns: true, 
+      awareness: new awarenessProtocol.Awareness(ydoc)
+    }
+    const webrtcProvider = new WebrtcProvider('text-editor', ydoc, webrtcOpts)
+    
+
+    //indexed db
+    const indexeddbProvider = new IndexeddbPersistence('text-editor', ydoc)
+    indexeddbProvider.on('synced', () => {
+      console.log('content from the database is loaded')
     })
+    
+    indexeddbProvider.get('username').then(function(db_username) {
+      if (db_username) {
+        setUsername(db_username)
+        console.log('received username' + db_username)
+      } else {
+        const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
+        setUsername(randomName)
+        indexeddbProvider.set('username', randomName)
+        console.log('setting username to ' + randomName)
+      }
+      webrtcProvider.awareness.setLocalStateField('user', {
+        name: username,
+        color: randomColor
+      })
+    }, function(err) {
+      console.log('no username', err); // Error: "It broke"
+    });
+    const ytext = ydoc.getText()
+    new QuillBinding(ytext, quillRef)
   }, [])
 
   const attachQuillRefs = () => {
