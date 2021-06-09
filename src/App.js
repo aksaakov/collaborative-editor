@@ -41,7 +41,7 @@ function App() {
 
   // const provider = new WebsocketProvider("ws://localhost:1234", 'collaboration', ydoc)
   const indexeddbProvider = new IndexeddbPersistence('y-text-sync', ydoc)
-  const webrtcProvider = new WebrtcProvider('count-demo', ydoc)
+  const webrtcProvider = new WebrtcProvider('y-text-sync', ydoc)
 
 
   indexeddbProvider.on('synced', () => {
@@ -57,6 +57,7 @@ function App() {
   
     // "Bind" the quill editor to a Yjs text type.
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
+    console.log(webrtcProvider.signalingConns)
 
     const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, }); // big_red_donkey
     const randomColor = uniqueNamesGenerator({ dictionaries: [colors], length }); // big_red_donkey
