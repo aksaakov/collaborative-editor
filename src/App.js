@@ -1,7 +1,7 @@
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import * as Y from 'yjs'
@@ -29,27 +29,36 @@ function App() {
   const classes = useStyles();
   let quillRef=null;
   let reactQuillRef=null;
-  // const [value, setValue] = React.useState('');
-  // const handleChange = (event) => {
-  //   setValue(event.target.value);
-  // };
-  // const editorContainer = document.createElement('div')
-  // editorContainer.setAttribute('id', 'editor')
-  // document.body.insertBefore(editorContainer, null)
+  const [username, setUsername] = useState('');
+
+  const colors = [
+    'green', 'blue', 'red', 'yellow', 'orange', 'pink', 'purple'
+  ]
+  const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, }); // big_red_donkey
+  const randomColor = uniqueNamesGenerator({ dictionaries: [colors], length: 1 }); // big_red_donkey
 
   const ydoc = new Y.Doc()
 
-  // const provider = new WebsocketProvider("ws://localhost:1234", 'collaboration', ydoc)
   const indexeddbProvider = new IndexeddbPersistence('y-text-sync', ydoc)
   const webrtcProvider = new WebrtcProvider('y-text-sync', ydoc)
-
 
   indexeddbProvider.on('synced', () => {
     console.log('content from the database is loaded')
   })
-
-  // Define a shared text type on the document
-
+  // indexeddbProvider.del('username')
+  
+  indexeddbProvider.get('username').then(function(username) {
+    if (username) {
+      setUsername(username)
+    } else {
+      indexeddbProvider.set('username', randomName)
+      console.log('username was set to ' + username)
+    }
+  }, function(err) {
+    console.log('no username', err); // Error: "It broke"
+    
+  });
+  
   useEffect(()=>{
     attachQuillRefs()
    
@@ -57,10 +66,6 @@ function App() {
   
     // "Bind" the quill editor to a Yjs text type.
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
-    console.log(webrtcProvider.signalingConns)
-
-    const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, }); // big_red_donkey
-    const randomColor = uniqueNamesGenerator({ dictionaries: [colors], length }); // big_red_donkey
 
     webrtcProvider.awareness.setLocalStateField('user', {
       name: randomName,
@@ -77,6 +82,7 @@ function App() {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
+        <span>You are: {username}</span>
         {/* <form className={classes.root} noValidate autoComplete="off">
         </form> */}
         <ReactQuill 
