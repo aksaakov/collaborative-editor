@@ -33,7 +33,8 @@ const yarray = ydoc.getArray('somearray')
 // webrtc
 const webrtcOpts = { 
   filterBcConns: true, 
-  awareness: new awarenessProtocol.Awareness(ydoc)
+  awareness: new awarenessProtocol.Awareness(ydoc),
+  signaling: ['wss://collaborative-editor-yjs.herokuapp.com/', 'ws://localhost:4444']
 }
 const webrtcProvider = new WebrtcProvider('text-editor', ydoc, webrtcOpts)
 
@@ -42,18 +43,6 @@ const indexeddbProvider = new IndexeddbPersistence('text-editor', ydoc)
 indexeddbProvider.on('synced', () => {
   console.log('content from the database is loaded')
 })
-
-console.log('hello')
-  
-// // User has switched back to the tab
-// const onFocus = () => {
-//   console.log('Tab is in focus');
-// };
-
-// // User has switched away from the tab (AKA tab is hidden)
-// const onBlur = () => {
-//   console.log('Tab is blurred');
-// };
 
 function App() {
   const [username, setUsername] = useState('');
@@ -70,34 +59,14 @@ function App() {
     // yarray.push([username])
   }
 
-  // function onEditorBlur() {
-  //   yarray.forEach((usr, index) => {
-  //     if (usr === username){
-  //       console.log('deleting: ' + username)
-  //       yarray.delete(index, 1)
-  //     }
-  //   })
-  //   console.log('current users: ' + [users])
-  // }
-
-  // function onEditorFoucs() {
-  //   if(yarray.length>0) {
-  //     yarray.forEach((usr) => {
-  //       console.log('usr', usr)
-  //       if (usr !== username){
-  //         console.log('adding: ' + username)
-  //         yarray.push([username])
-  //       }
-  //     })
-  //   } else {
-  //     yarray.push([username])
-  //   }
-  //   console.log('current users: ' + [users])
-  // }
-
   useEffect(()=>{
-    attachQuillRefs()   
-
+    attachQuillRefs()  
+    const awr = webrtcProvider.awareness.getStates().values()
+    console.log(awr) 
+    for (var item of awr) {
+      console.log(item)
+    }
+    
     yarray.observe(_ => {
       setUsers(yarray.toArray())
       console.log('yarray state: ', yarray.toArray())
@@ -118,32 +87,8 @@ function App() {
         name: currentUsername,
         color: randomColor
       })
-
-      webrtcProvider.awareness.getStates().forEach((aw, clientId) => {
-        console.log(aw, clientId)
-      });
-      
-
-      // for (const [key, value] of loggedInUsers) {
-      //   console.log(key, value);
-      // }
-      // loggedInUsers.forEach((user)=>console.log('awareness user: ', user.name))
-      // window.addEventListener('focus', function(){
-      //   onEditorFoucs()
-      //   console.log('Tab is in focus')
-      // });
-      // window.addEventListener('blur', function(){
-      //   yarray.forEach((usr, index) => {
-      //     if (usr === currentUsername){
-      //       console.log('deleting: ' + currentUsername)
-      //       yarray.delete(index, 1)
-      //     }
-      //   })
-      //   console.log('current users: ' + [users])
-      //   console.log('Tab not in focus')
-      // });
     });
-
+    
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
  
