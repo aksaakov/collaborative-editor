@@ -71,21 +71,29 @@ function App() {
     // yarray.push([username])
   }
 
-  function onEditorBlur() {
-    yarray.map((usr, index) => {
-      if (usr === username){
-        console.log('deleting: ' + username)
-        yarray.delete(index, 1)
-      }
-      console.log('deleting: ' + username)
-      console.log('current users: ' + users)
-    })
-  }
+  // function onEditorBlur() {
+  //   yarray.forEach((usr, index) => {
+  //     if (usr === username){
+  //       console.log('deleting: ' + username)
+  //       yarray.delete(index, 1)
+  //     }
+  //   })
+  //   console.log('current users: ' + [users])
+  // }
 
   function onEditorFoucs() {
-    yarray.push([username])
-    console.log('adding: ' + username)
-    console.log('current users: ' + users)
+    if(yarray.length>0) {
+      yarray.forEach((usr) => {
+        console.log('usr', usr)
+        if (usr !== username){
+          console.log('adding: ' + username)
+          yarray.push([username])
+        }
+      })
+    } else {
+      yarray.push([username])
+    }
+    console.log('current users: ' + [users])
   }
 
   useEffect(()=>{
@@ -101,7 +109,7 @@ function App() {
         return db_username
       } else {
         const newUser = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
-        yarray.push([newUser])
+        // yarray.push([newUser])
         indexeddbProvider.set('username', newUser)
         return newUser
       }
@@ -112,20 +120,19 @@ function App() {
         color: randomColor
       })
       // window.addEventListener('focus', function(){
-      //   console.log('eventlistener ' + currentUsername)
-      //   yarray.push([currentUsername])
+      //   onEditorFoucs()
       //   console.log('Tab is in focus')
       // });
-      // window.addEventListener('blur', function(){
-      //   yarray.map((usr, index) => {
-          // if (usr === currentUsername){
-          //   console.log()
-          //   yarray.delete(index, 1)
-          // }
-      //   })
-      //   webrtcProvider.awareness.off()
-      //   console.log('Tab not in focus')
-      // });
+      window.addEventListener('blur', function(){
+        yarray.forEach((usr, index) => {
+          if (usr === currentUsername){
+            console.log('deleting: ' + currentUsername)
+            yarray.delete(index, 1)
+          }
+        })
+        console.log('current users: ' + [users])
+        console.log('Tab not in focus')
+      });
     });
 
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
@@ -144,7 +151,6 @@ function App() {
           theme={'snow'} 
           modules={{ cursors:true }}  
           onFocus={() => onEditorFoucs()}
-          onBlur={() => onEditorBlur()}
         />
         <Button variant="contained" onClick={() => handleClear()}>Clear</Button>
       </Container>
