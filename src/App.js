@@ -13,47 +13,74 @@ import QuillCursors from 'quill-cursors'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import * as awarenessProtocol from 'y-protocols/awareness.js'
+import { Button } from '@material-ui/core';
 const { uniqueNamesGenerator, colors, animals, adjectives } = require('unique-names-generator');
 
 Quill.register('modules/cursors', QuillCursors)
 
+let quillRef=null;
+let reactQuillRef=null;
+
+const attachQuillRefs = () => {
+  if (typeof reactQuillRef.getEditor !== 'function') return;
+  quillRef = reactQuillRef.getEditor();
+}
+
+const ydoc = new Y.Doc()
+const ytext = ydoc.getText('sometext')
+const yarray = ydoc.getArray('somearray')
+
+// webrtc
+const webrtcOpts = { 
+  filterBcConns: true, 
+  awareness: new awarenessProtocol.Awareness(ydoc)
+}
+const webrtcProvider = new WebrtcProvider('text-editor', ydoc, webrtcOpts)
+
+//indexed db
+const indexeddbProvider = new IndexeddbPersistence('text-editor', ydoc)
+indexeddbProvider.on('synced', () => {
+  console.log('content from the database is loaded')
+})
+
+console.log('hello')
+
+  
+// // User has switched back to the tab
+// const onFocus = () => {
+//   console.log('Tab is in focus');
+// };
+
+// // User has switched away from the tab (AKA tab is hidden)
+// const onBlur = () => {
+//   console.log('Tab is blurred');
+// };
+
 function App() {
-  let quillRef=null;
-  let reactQuillRef=null;
   const [username, setUsername] = useState('');
   const [users, setUsers] = useState([]);
 
   // name randomiser
   const customColors = [
-    'green', 'blue', 'red', 'yellow', 'orange', 'pink', 'purple'
+    'green', 'blue', 'red', 'amber', 'orange', 'pink', 'purple'
   ]
   const randomColor = uniqueNamesGenerator({ dictionaries: [customColors], length: 1, separator: "-" });
 
-  let webrtcProvider
+  function handleClear() {
+    yarray.delete(0, yarray.length)
+    yarray.push([username])
+  }
+
+ 
+
   useEffect(()=>{
-    attachQuillRefs()
-    const ydoc = new Y.Doc()
-    const ytext = ydoc.getText('sometext')
-    const yarray = ydoc.getArray('somearray')
+    attachQuillRefs()   
+
     yarray.observe(_ => {
       setUsers(yarray.toArray())
       console.log(yarray.toArray())
     })
 
-    // webrtc
-    const webrtcOpts = { 
-      filterBcConns: true, 
-      awareness: new awarenessProtocol.Awareness(ydoc)
-    }
-    webrtcProvider = new WebrtcProvider('text-editor', ydoc, webrtcOpts)
-    
-
-    //indexed db
-    const indexeddbProvider = new IndexeddbPersistence('text-editor', ydoc)
-    indexeddbProvider.on('synced', () => {
-      console.log('content from the database is loaded')
-    })
-    
     indexeddbProvider.get('username').then((db_username) => {
       if (db_username) {
         return db_username
@@ -69,22 +96,29 @@ function App() {
         name: currentUsername,
         color: randomColor
       })
+      window.addEventListener('focus', function(){
+        yarray.push([currentUsername])
+        console.log('Tab is in focus')
+      });
+      window.addEventListener('blur', function(){
+        yarray.map((usr, index) => {
+          if (usr === currentUsername){
+            yarray.delete(index, 1)
+          }
+        })
+        console.log('Tab not in focus')
+      });
     });
-
+    
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
-
-  const attachQuillRefs = () => {
-    if (typeof reactQuillRef.getEditor !== 'function') return;
-    quillRef = reactQuillRef.getEditor();
-  }
-
+ 
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
         <h3>Your nickname: {username}</h3>
-        <h4>You are collaborating with: {users.join(", ")}</h4>
+        <h4>Currently editting: {users.join(" ")}</h4>
         {/* <form className={classes.root} noValidate autoComplete="off">
         </form> */}
         <ReactQuill 
@@ -92,6 +126,7 @@ function App() {
           theme={'snow'} 
           modules={{ cursors:true }}  
         />
+        <Button variant="contained" onClick={() => handleClear()}>Clear</Button>
       </Container>
     </React.Fragment>
   );
