@@ -33,8 +33,7 @@ const yarray = ydoc.getArray('somearray')
 // webrtc
 const webrtcOpts = { 
   filterBcConns: true, 
-  awareness: new awarenessProtocol.Awareness(ydoc),
-  signaling: ['wss://collaborative-editor-yjs.herokuapp.com/', 'ws://localhost:4444']
+  awareness: new awarenessProtocol.Awareness(ydoc)
 }
 const webrtcProvider = new WebrtcProvider('text-editor', ydoc, webrtcOpts)
 
@@ -77,8 +76,8 @@ function App() {
         return db_username
       } else {
         const newUser = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
-        // yarray.push([newUser])
-        indexeddbProvider.set('username', newUser)
+        indexeddbProvider.set('username', newUser)  
+        yarray.push([newUser]) 
         return newUser
       }
     }).then((currentUsername)=>{
@@ -87,6 +86,31 @@ function App() {
         name: currentUsername,
         color: randomColor
       })
+    
+      window.addEventListener("focus", function() {
+        if(yarray.toArray > 0) {
+          yarray.map((usr)=>{
+            console.log('mapping through user yarray', usr)
+            if (usr !== currentUsername) {
+              console.log('this username not found -> adding it')
+              yarray.push([currentUsername])
+            }
+          })
+        } else {
+          yarray.push([currentUsername])
+        }
+        
+        console.log('on window')
+      });
+      window.addEventListener("blur", function() {
+        yarray.map((usr, index)=>{
+          console.log('blur: mapping through user yarray')
+          if (usr === currentUsername) {
+            yarray.delete(index, 1)
+          }
+        })
+        console.log('left window')
+      });
     });
     
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
