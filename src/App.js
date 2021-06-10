@@ -68,7 +68,7 @@ function App() {
 
   function handleClear() {
     yarray.delete(0, yarray.length)
-    yarray.push([username])
+    // yarray.push([username])
   }
 
  
@@ -97,6 +97,7 @@ function App() {
         color: randomColor
       })
       window.addEventListener('focus', function(){
+        console.log('eventlistener ' + currentUsername)
         yarray.push([currentUsername])
         console.log('Tab is in focus')
       });
@@ -106,10 +107,11 @@ function App() {
             yarray.delete(index, 1)
           }
         })
+        webrtcProvider.awareness.off()
         console.log('Tab not in focus')
       });
     });
-    
+
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
  
