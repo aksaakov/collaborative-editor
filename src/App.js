@@ -44,6 +44,8 @@ indexeddbProvider.on('synced', () => {
   console.log('content from the database is loaded')
 })
 
+const customColors = ['blue', 'green', 'amber', 'red', 'purple', 'silver', 'gold', 'orange', 'pink']
+
 function App() {
   const [username, setUsername] = useState('');
   const [userColor, setUserColor] = useState('');
@@ -65,7 +67,7 @@ function App() {
         console.log('usr', usr)
         if (usr.uname !== username) {
           console.log('adding')
-          yarray.push([{username, userColor}])
+          yarray.push([{uname: username, ucolor: userColor}])
         } 
       })
     }
@@ -83,7 +85,6 @@ function App() {
       }
     })
     console.log('???', yarray.toArray())
-    ydoc.destroy()
   }
 
   const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
@@ -102,19 +103,19 @@ function App() {
       } else {
         const newUser = {
           name: randomName,
-          userColor: colors[Math.floor(Math.random()*colors.length)],
+          colour: customColors[Math.floor(Math.random()*customColors.length)],
         }
         indexeddbProvider.set('user', newUser)  
         return newUser
       }
     }).then((currentUser)=>{
       setUsername(currentUser.name)
-      setUserColor(currentUser.userColor)
+      setUserColor(currentUser.colour)
       console.log(currentUser.name)
-      console.log(currentUser.userColor)
+      console.log(currentUser.colour)
       webrtcProvider.awareness.setLocalStateField('user', {
         name: currentUser.name,
-        color: currentUser.userColor
+        color: currentUser.colour
       })
       yarray.toArray().forEach(el => {
         if(el === currentUser.name)
@@ -131,8 +132,8 @@ function App() {
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
         <h3>Your nickname: <span style={{color: userColor}}>{username}</span></h3>
-        <h4>Currently editting: { users.map((user) => { return <span style={{color: user.ucolor}}>{user.uname}</span>
-    })} </h4>
+        <h4>Currently editting: <ul>{ users.map((user) => { return <li style={{color: user.ucolor}}>{user.uname}</li>
+    })} </ul></h4>
         {/* <form className={classes.root} noValidate autoComplete="off">
         </form> */}
         <div hidden={!canEdit}>
