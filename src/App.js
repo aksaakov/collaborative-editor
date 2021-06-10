@@ -44,7 +44,6 @@ indexeddbProvider.on('synced', () => {
 })
 
 console.log('hello')
-
   
 // // User has switched back to the tab
 // const onFocus = () => {
@@ -81,27 +80,27 @@ function App() {
   //   console.log('current users: ' + [users])
   // }
 
-  function onEditorFoucs() {
-    if(yarray.length>0) {
-      yarray.forEach((usr) => {
-        console.log('usr', usr)
-        if (usr !== username){
-          console.log('adding: ' + username)
-          yarray.push([username])
-        }
-      })
-    } else {
-      yarray.push([username])
-    }
-    console.log('current users: ' + [users])
-  }
+  // function onEditorFoucs() {
+  //   if(yarray.length>0) {
+  //     yarray.forEach((usr) => {
+  //       console.log('usr', usr)
+  //       if (usr !== username){
+  //         console.log('adding: ' + username)
+  //         yarray.push([username])
+  //       }
+  //     })
+  //   } else {
+  //     yarray.push([username])
+  //   }
+  //   console.log('current users: ' + [users])
+  // }
 
   useEffect(()=>{
     attachQuillRefs()   
 
     yarray.observe(_ => {
       setUsers(yarray.toArray())
-      console.log(yarray.toArray())
+      console.log('yarray state: ', yarray.toArray())
     })
 
     indexeddbProvider.get('username').then((db_username) => {
@@ -119,20 +118,30 @@ function App() {
         name: currentUsername,
         color: randomColor
       })
+
+      webrtcProvider.awareness.getStates().forEach((aw, clientId) => {
+        console.log(aw, clientId)
+      });
+      
+
+      // for (const [key, value] of loggedInUsers) {
+      //   console.log(key, value);
+      // }
+      // loggedInUsers.forEach((user)=>console.log('awareness user: ', user.name))
       // window.addEventListener('focus', function(){
       //   onEditorFoucs()
       //   console.log('Tab is in focus')
       // });
-      window.addEventListener('blur', function(){
-        yarray.forEach((usr, index) => {
-          if (usr === currentUsername){
-            console.log('deleting: ' + currentUsername)
-            yarray.delete(index, 1)
-          }
-        })
-        console.log('current users: ' + [users])
-        console.log('Tab not in focus')
-      });
+      // window.addEventListener('blur', function(){
+      //   yarray.forEach((usr, index) => {
+      //     if (usr === currentUsername){
+      //       console.log('deleting: ' + currentUsername)
+      //       yarray.delete(index, 1)
+      //     }
+      //   })
+      //   console.log('current users: ' + [users])
+      //   console.log('Tab not in focus')
+      // });
     });
 
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
@@ -150,7 +159,7 @@ function App() {
           ref={(el) => { reactQuillRef = el }}
           theme={'snow'} 
           modules={{ cursors:true }}  
-          onFocus={() => onEditorFoucs()}
+          // onFocus={() => onEditorFoucs()}
         />
         <Button variant="contained" onClick={() => handleClear()}>Clear</Button>
       </Container>
