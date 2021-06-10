@@ -130,8 +130,8 @@ function App() {
           modules={{ cursors:true }}  
         />
         </div>
-        <Button variant="contained" onClick={() => logOff()}>LogOff</Button>
-        <Button variant="contained" onClick={() => logOn()}>LogOn</Button>
+        <Button variant="contained" onClick={() => logOff()}>Join</Button>
+        <Button variant="contained" onClick={() => logOn()}>Leave</Button>
         <Button hidden={true} style={{marginLeft: '72%'}} variant="contained" onClick={() => handleClear()}>Dump</Button>
       </Container>
     </React.Fragment>
