@@ -21,23 +21,31 @@ function App() {
   let quillRef=null;
   let reactQuillRef=null;
   const [username, setUsername] = useState('');
+  const [users, setUsers] = useState([]);
 
   // name randomiser
   const customColors = [
     'green', 'blue', 'red', 'yellow', 'orange', 'pink', 'purple'
   ]
-  const randomColor = uniqueNamesGenerator({ dictionaries: [customColors], length: 1 }); // big_red_donkey
+  const randomColor = uniqueNamesGenerator({ dictionaries: [customColors], length: 1, separator: "-" });
 
+  let webrtcProvider
   useEffect(()=>{
     attachQuillRefs()
     const ydoc = new Y.Doc()
+    const ytext = ydoc.getText('sometext')
+    const yarray = ydoc.getArray('somearray')
+    yarray.observe(_ => {
+      setUsers(yarray.toArray())
+      console.log(yarray.toArray())
+    })
 
     // webrtc
     const webrtcOpts = { 
       filterBcConns: true, 
       awareness: new awarenessProtocol.Awareness(ydoc)
     }
-    const webrtcProvider = new WebrtcProvider('text-editor', ydoc, webrtcOpts)
+    webrtcProvider = new WebrtcProvider('text-editor', ydoc, webrtcOpts)
     
 
     //indexed db
@@ -46,25 +54,24 @@ function App() {
       console.log('content from the database is loaded')
     })
     
-    indexeddbProvider.get('username').then(function(db_username) {
+    indexeddbProvider.get('username').then((db_username) => {
       if (db_username) {
-        setUsername(db_username)
-        console.log('received username' + db_username)
+        return db_username
       } else {
-        const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
-        setUsername(randomName)
-        indexeddbProvider.set('username', randomName)
-        console.log('setting username to ' + randomName)
+        const newUser = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
+        yarray.push([newUser])
+        indexeddbProvider.set('username', newUser)
+        return newUser
       }
+    }).then((currentUsername)=>{
+      setUsername(currentUsername)
       webrtcProvider.awareness.setLocalStateField('user', {
-        name: username,
+        name: currentUsername,
         color: randomColor
       })
-    }, function(err) {
-      console.log('no username', err); // Error: "It broke"
     });
-    const ytext = ydoc.getText()
-    new QuillBinding(ytext, quillRef)
+
+    new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
 
   const attachQuillRefs = () => {
@@ -76,7 +83,8 @@ function App() {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
-        <span>You are: {username}</span>
+        <h3>Your nickname: {username}</h3>
+        <h4>You are collaborating with: {users.join(", ")}</h4>
         {/* <form className={classes.root} noValidate autoComplete="off">
         </form> */}
         <ReactQuill 
