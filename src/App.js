@@ -46,6 +46,7 @@ indexeddbProvider.on('synced', () => {
 function App() {
   const [username, setUsername] = useState('');
   const [users, setUsers] = useState([]);
+  const [canEdit, setCanEdit] = useState();
 
   // name randomiser
   const customColors = [
@@ -58,13 +59,40 @@ function App() {
     // yarray.push([username])
   }
 
-  useEffect(()=>{
-    attachQuillRefs()  
-    const awr = webrtcProvider.awareness.getStates().values()
-    console.log(awr) 
-    for (var item of awr) {
-      console.log(item)
+  function logOn() {
+    setCanEdit(true)
+    console.log('username', username)
+    if(yarray.toArray().length === 0) {
+      console.log(yarray.toArray().length)
+      yarray.push([username])
+    } else {
+      yarray.toArray().forEach((usr, index)=>{
+        console.log('usr', usr)
+        if (usr !== username) {
+          console.log('adding')
+          yarray.push([username])
+        } 
+      })
     }
+  }
+
+  function logOff() {
+    setCanEdit(false)
+    console.log('username', username)
+    console.log('???', yarray.toArray())
+    yarray.toArray().forEach((usr, index)=>{
+      console.log('usr', usr)
+      if (usr === username) {
+        console.log('deleting')
+        yarray.delete(index, 1)
+      }
+    })
+    console.log('???', yarray.toArray())
+    ydoc.destroy()
+  }
+
+  useEffect(()=>{
+    attachQuillRefs()
     
     yarray.observe(_ => {
       setUsers(yarray.toArray())
@@ -77,7 +105,6 @@ function App() {
       } else {
         const newUser = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
         indexeddbProvider.set('username', newUser)  
-        yarray.push([newUser]) 
         return newUser
       }
     }).then((currentUsername)=>{
@@ -86,33 +113,22 @@ function App() {
         name: currentUsername,
         color: randomColor
       })
-    
-      window.addEventListener("focus", function() {
-        if(yarray.toArray > 0) {
-          yarray.map((usr)=>{
-            console.log('mapping through user yarray', usr)
-            if (usr !== currentUsername) {
-              console.log('this username not found -> adding it')
-              yarray.push([currentUsername])
-            }
-          })
-        } else {
-          yarray.push([currentUsername])
-        }
-        
-        console.log('on window')
-      });
-      window.addEventListener("blur", function() {
-        yarray.map((usr, index)=>{
-          console.log('blur: mapping through user yarray')
-          if (usr === currentUsername) {
-            yarray.delete(index, 1)
-          }
-        })
-        console.log('left window')
-      });
-    });
-    
+    })
+
+    // for (let [key, value] in webrtcProvider.awareness.getStates()) {
+    //   console.log(value)
+    // }
+
+   
+
+    // webrtcProvider.awareness.getStates().forEach((key)=>{
+    //   console.log(key)
+    // })
+    // indexeddbProvider.get('logedIn').then((isLoggedIn)=> {
+    //   console.log('isLoggedIn ', isLoggedIn)
+    //   setCanEdit(isLoggedIn)
+    // });
+
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
  
@@ -124,13 +140,17 @@ function App() {
         <h4>Currently editting: {users.join(" ")}</h4>
         {/* <form className={classes.root} noValidate autoComplete="off">
         </form> */}
+        <div hidden={!canEdit}>
         <ReactQuill 
           ref={(el) => { reactQuillRef = el }}
           theme={'snow'} 
           modules={{ cursors:true }}  
           // onFocus={() => onEditorFoucs()}
         />
-        <Button variant="contained" onClick={() => handleClear()}>Clear</Button>
+        </div>
+        <Button variant="contained" onClick={() => logOff()}>LogOff</Button>
+        <Button variant="contained" onClick={() => logOn()}>LogOn</Button>
+        <Button style={{marginLeft: '72%'}} variant="contained" onClick={() => handleClear()}>Dump</Button>
       </Container>
     </React.Fragment>
   );
