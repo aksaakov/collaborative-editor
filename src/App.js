@@ -137,7 +137,7 @@ function App() {
         </div>
         <Button variant="contained" onClick={() => logOff()}>LogOff</Button>
         <Button variant="contained" onClick={() => logOn()}>LogOn</Button>
-        <Button style={{marginLeft: '72%'}} variant="contained" onClick={() => handleClear()}>Dump</Button>
+        <Button hidden={true} style={{marginLeft: '72%'}} variant="contained" onClick={() => handleClear()}>Dump</Button>
       </Container>
     </React.Fragment>
   );
