@@ -69,7 +69,7 @@ function App() {
 
   function logOff() {
     setCanEdit(false)
-
+    console.log('logging off')
     yarray.toArray().forEach((usr, index)=>{
       if (usr.uname === username) {
         console.log('deleting')
@@ -102,18 +102,17 @@ function App() {
     }).then((currentUser)=>{
       setUsername(currentUser.name)
       setUserColor(currentUser.colour)
-      console.log(currentUser.name)
-      console.log(currentUser.colour)
       webrtcProvider.awareness.setLocalStateField('user', {
         name: currentUser.name,
         color: currentUser.colour
       })
-      yarray.toArray().forEach(el => {
-        if(el === currentUser.name)
+      const containsUsername = (user) => user.uname === currentUser.name;
+      if(yarray.toArray().some(containsUsername)) {
         setCanEdit(true)
-      })
+      }
     })
-    console.log(users);
+    // window.addEventListener("beforeunload", logOff());
+    
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
  
@@ -123,16 +122,12 @@ function App() {
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
         <h3>Your nickname: <span style={{color: userColor}}>{username}</span></h3>
-        <h4>Currently editting: <ul>{ users.map((user) => { return <li style={{color: user.ucolor}}>{user.uname}</li>
-    })} </ul></h4>
-        {/* <form className={classes.root} noValidate autoComplete="off">
-        </form> */}
+        <h4>Currently editting: <ul>{ users.map((user) => { return <li style={{color: user.ucolor}}>{user.uname}</li>})}</ul></h4>
         <div hidden={!canEdit}>
         <ReactQuill 
           ref={(el) => { reactQuillRef = el }}
           theme={'snow'} 
           modules={{ cursors:true }}  
-          // onFocus={() => onEditorFoucs()}
         />
         </div>
         <Button variant="contained" onClick={() => logOff()}>LogOff</Button>
