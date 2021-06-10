@@ -63,7 +63,6 @@ function App() {
     setCanEdit(true)
     console.log('username', username)
     if(yarray.toArray().length === 0) {
-      console.log(yarray.toArray().length)
       yarray.push([username])
     } else {
       yarray.toArray().forEach((usr, index)=>{
@@ -113,21 +112,11 @@ function App() {
         name: currentUsername,
         color: randomColor
       })
+      yarray.toArray().forEach(el => {
+        if(el === currentUsername)
+        setCanEdit(true)
+      })
     })
-
-    // for (let [key, value] in webrtcProvider.awareness.getStates()) {
-    //   console.log(value)
-    // }
-
-   
-
-    // webrtcProvider.awareness.getStates().forEach((key)=>{
-    //   console.log(key)
-    // })
-    // indexeddbProvider.get('logedIn').then((isLoggedIn)=> {
-    //   console.log('isLoggedIn ', isLoggedIn)
-    //   setCanEdit(isLoggedIn)
-    // });
 
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
