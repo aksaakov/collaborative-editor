@@ -14,6 +14,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import * as awarenessProtocol from 'y-protocols/awareness.js'
 import { Button } from '@material-ui/core';
+import { isCompositeComponent } from 'react-dom/test-utils';
 const { uniqueNamesGenerator, colors, animals, adjectives } = require('unique-names-generator');
 
 Quill.register('modules/cursors', QuillCursors)
@@ -45,14 +46,9 @@ indexeddbProvider.on('synced', () => {
 
 function App() {
   const [username, setUsername] = useState('');
+  const [userColor, setUserColor] = useState('');
   const [users, setUsers] = useState([]);
   const [canEdit, setCanEdit] = useState();
-
-  // name randomiser
-  const customColors = [
-    'green', 'blue', 'red', 'amber', 'orange', 'pink', 'purple'
-  ]
-  const randomColor = uniqueNamesGenerator({ dictionaries: [customColors], length: 1, separator: "-" });
 
   function handleClear() {
     yarray.delete(0, yarray.length)
@@ -63,13 +59,13 @@ function App() {
     setCanEdit(true)
     console.log('username', username)
     if(yarray.toArray().length === 0) {
-      yarray.push([username])
+      yarray.push([{uname: username, ucolor: userColor}])
     } else {
       yarray.toArray().forEach((usr, index)=>{
         console.log('usr', usr)
-        if (usr !== username) {
+        if (usr.uname !== username) {
           console.log('adding')
-          yarray.push([username])
+          yarray.push([{username, userColor}])
         } 
       })
     }
@@ -81,7 +77,7 @@ function App() {
     console.log('???', yarray.toArray())
     yarray.toArray().forEach((usr, index)=>{
       console.log('usr', usr)
-      if (usr === username) {
+      if (usr.uname === username) {
         console.log('deleting')
         yarray.delete(index, 1)
       }
@@ -89,6 +85,8 @@ function App() {
     console.log('???', yarray.toArray())
     ydoc.destroy()
   }
+
+  const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
 
   useEffect(()=>{
     attachQuillRefs()
@@ -98,35 +96,43 @@ function App() {
       console.log('yarray state: ', yarray.toArray())
     })
 
-    indexeddbProvider.get('username').then((db_username) => {
-      if (db_username) {
-        return db_username
+    indexeddbProvider.get('user').then((db_user) => {
+      if (db_user) {
+        return db_user
       } else {
-        const newUser = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
-        indexeddbProvider.set('username', newUser)  
+        const newUser = {
+          name: randomName,
+          userColor: colors[Math.floor(Math.random()*colors.length)],
+        }
+        indexeddbProvider.set('user', newUser)  
         return newUser
       }
-    }).then((currentUsername)=>{
-      setUsername(currentUsername)
+    }).then((currentUser)=>{
+      setUsername(currentUser.name)
+      setUserColor(currentUser.userColor)
+      console.log(currentUser.name)
+      console.log(currentUser.userColor)
       webrtcProvider.awareness.setLocalStateField('user', {
-        name: currentUsername,
-        color: randomColor
+        name: currentUser.name,
+        color: currentUser.userColor
       })
       yarray.toArray().forEach(el => {
-        if(el === currentUsername)
+        if(el === currentUser.name)
         setCanEdit(true)
       })
     })
-
+    console.log(users);
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
  
+
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
-        <h3>Your nickname: {username}</h3>
-        <h4>Currently editting: {users.join(" ")}</h4>
+        <h3>Your nickname: <span style={{color: userColor}}>{username}</span></h3>
+        <h4>Currently editting: { users.map((user) => { return <span style={{color: user.ucolor}}>{user.uname}</span>
+    })} </h4>
         {/* <form className={classes.root} noValidate autoComplete="off">
         </form> */}
         <div hidden={!canEdit}>
