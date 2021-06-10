@@ -60,31 +60,22 @@ function App() {
   function logOn() {
     setCanEdit(true)
     console.log('username', username)
-    if(yarray.toArray().length === 0) {
+    const containsUsername = (user) => user.uname === username;
+    if(!yarray.toArray().some(containsUsername)) {
+      console.log('does not contain username')
       yarray.push([{uname: username, ucolor: userColor}])
-    } else {
-      yarray.toArray().forEach((usr, index)=>{
-        console.log('usr', usr)
-        if (usr.uname !== username) {
-          console.log('adding')
-          yarray.push([{uname: username, ucolor: userColor}])
-        } 
-      })
     }
   }
 
   function logOff() {
     setCanEdit(false)
-    console.log('username', username)
-    console.log('???', yarray.toArray())
+
     yarray.toArray().forEach((usr, index)=>{
-      console.log('usr', usr)
       if (usr.uname === username) {
         console.log('deleting')
         yarray.delete(index, 1)
       }
     })
-    console.log('???', yarray.toArray())
   }
 
   const randomName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: ' ' , length: 2, });
