@@ -45,7 +45,7 @@ indexeddbProvider.on('synced', () => {
   console.log('content from the database is loaded')
 })
 
-const customColors = ['blue', 'green', 'amber', 'red', 'purple', 'silver', 'gold', 'orange', 'pink']
+const customColors = ['blue', 'green', 'amber', 'red', 'purple', 'silver', 'gold', 'orange', 'pink', 'magenta', 'olive', 'scarlet', 'rose']
 
 function App() {
   const [username, setUsername] = useState('');
