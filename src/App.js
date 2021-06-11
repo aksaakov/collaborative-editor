@@ -16,6 +16,7 @@ import 'react-quill/dist/quill.snow.css';
 import * as awarenessProtocol from 'y-protocols/awareness.js'
 import { Button } from '@material-ui/core';
 import { isCompositeComponent } from 'react-dom/test-utils';
+import { deleteDB } from 'lib0/indexeddb';
 const { uniqueNamesGenerator, colors, animals, adjectives } = require('unique-names-generator');
 
 Quill.register('modules/cursors', QuillCursors)
@@ -45,7 +46,7 @@ indexeddbProvider.on('synced', () => {
   console.log('content from the database is loaded')
 })
 
-const customColors = ['blue', 'green', 'amber', 'red', 'purple', 'silver', 'gold', 'orange', 'pink', 'magenta', 'olive', 'scarlet', 'rose']
+const customColors = ['blue', 'green', 'amber', 'red', 'purple', 'silver', 'gold', 'orange', 'pink', 'magenta', 'olive', 'scarlet', 'rose', 'coral']
 
 function App() {
   const [username, setUsername] = useState('');
@@ -129,8 +130,9 @@ function App() {
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
         <h3>Your nickname: <span style={{color: userColor}}>{username}</span></h3> 
+        <Button variant="contained" onClick={() => handleJoinOrLeave()}>{canEdit?"Leave":"Join"}</Button>
         <div>
-          <h4>Currently editting:</h4>
+          {/* <h4>Currently editting:</h4> */}
           <div className="users">
           { yarray.toArray().map((user) => {  
           return <Tooltip title={user.uname} aria-label="add">
@@ -140,8 +142,7 @@ function App() {
           </div>
           {/* <h4>{ users.map((user) => { return <span style={{color: user.ucolor}}>{user.uname} </span>})}</h4> */}
         </div>
-        {/* <Button variant="contained" onClick={() => logOff()}>Leave</Button> */}
-        <Button variant="contained" onClick={() => handleJoinOrLeave()}>{canEdit?"Leave":"Join"}</Button>
+        {/* <Button variant="contained" onClick={() => handleClear()}>Destroy</Button> */}
         <div hidden={!canEdit}>
         <ReactQuill 
           ref={(el) => { reactQuillRef = el }}

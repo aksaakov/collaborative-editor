@@ -7,14 +7,14 @@
 }
 
 .circle {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   line-height: 20px;
   border-radius: 50%;
   font-size: 15px;
   color: #fff;
   text-align: center;
-  padding-top: 15px;
+  padding-top: 10px;
   margin-right: 5px;
   cursor: default;
 }
@@ -24,5 +24,8 @@
 }
 .users {
   display: flex;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  height: 30px;
+  justify-content: flex-end;
 }
