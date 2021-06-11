@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import React, { useEffect, useState } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
+import { Tooltip } from '@material-ui/core';
 import * as Y from 'yjs'
 import { IndexeddbPersistence } from 'y-indexeddb'
 import { WebrtcProvider } from 'y-webrtc'
@@ -57,6 +58,14 @@ function App() {
     // yarray.push([username])
   }
 
+  function handleJoinOrLeave() {
+    if(canEdit){
+      logOff()
+    } else {
+      logOn()
+    }
+  }
+
   function logOn() {
     setCanEdit(true)
     console.log('username', username)
@@ -82,12 +91,9 @@ function App() {
 
   useEffect(()=>{
     attachQuillRefs()
-    
     yarray.observe(_ => {
       setUsers(yarray.toArray())
-      console.log('yarray state: ', yarray.toArray())
-    })
-
+      })
     indexeddbProvider.get('user').then((db_user) => {
       if (db_user) {
         return db_user
@@ -107,32 +113,43 @@ function App() {
         color: currentUser.colour
       })
       const containsUsername = (user) => user.uname === currentUser.name;
+      console.log('array >>>> ', yarray.toArray())
+      console.log('user >>>> ', currentUser.name)
       if(yarray.toArray().some(containsUsername)) {
+        console.log('user logged in')
         setCanEdit(true)
-      }
+      }   
     })
-    // window.addEventListener("beforeunload", logOff());
     
     new QuillBinding(ytext, quillRef, webrtcProvider.awareness)
   }, [])
  
-
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="md" className="container"> 
-        <h3>Your nickname: <span style={{color: userColor}}>{username}</span></h3>
-        <h4>Currently editting: <ul>{ users.map((user) => { return <li style={{color: user.ucolor}}>{user.uname}</li>})}</ul></h4>
+        <h3>Your nickname: <span style={{color: userColor}}>{username}</span></h3> 
+        <div>
+          <h4>Currently editting:</h4>
+          <div className="users">
+          { yarray.toArray().map((user) => {  
+          return <Tooltip title={user.uname} aria-label="add">
+            <div className="circle" style={{ backgroundColor: user.ucolor}} ariaLabel="this">{ user.uname.match(/\b(\w)/g).join(' ').toUpperCase() }</div>
+            </Tooltip>
+          })}
+          </div>
+          {/* <h4>{ users.map((user) => { return <span style={{color: user.ucolor}}>{user.uname} </span>})}</h4> */}
+        </div>
+        {/* <Button variant="contained" onClick={() => logOff()}>Leave</Button> */}
+        <Button variant="contained" onClick={() => handleJoinOrLeave()}>{canEdit?"Leave":"Join"}</Button>
         <div hidden={!canEdit}>
         <ReactQuill 
           ref={(el) => { reactQuillRef = el }}
           theme={'snow'} 
-          modules={{ cursors:true }}  
+          modules={{ cursors:true }} 
+          style={{ height: '300px', paddingBottom: '50px', paddingTop: '10px' }} 
         />
         </div>
-        <Button variant="contained" onClick={() => logOff()}>Join</Button>
-        <Button variant="contained" onClick={() => logOn()}>Leave</Button>
-        <Button hidden={true} style={{marginLeft: '72%'}} variant="contained" onClick={() => handleClear()}>Dump</Button>
       </Container>
     </React.Fragment>
   );
