@@ -7625,7 +7625,7 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lib0@^0.2.31, lib0@^0.2.41, lib0@^0.2.42:
+lib0@^0.2.31, lib0@^0.2.35, lib0@^0.2.41, lib0@^0.2.42:
   version "0.2.42"
   resolved "https://registry.yarnpkg.com/lib0/-/lib0-0.2.42.tgz#6d8bf1fb8205dec37a953c521c5ee403fd8769b0"
   integrity sha512-8BNM4MiokEKzMvSxTOC3gnCBisJH+jL67CnSnqzHv3jli3pUvGC8wz+0DQ2YvGr4wVQdb2R2uNNPw9LEpVvJ4Q==
@@ -11860,6 +11860,11 @@ unique-filename@^1.1.1:
   dependencies:
     unique-slug "^2.0.0"
 
+unique-names-generator@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/unique-names-generator/-/unique-names-generator-4.5.0.tgz#0da9bb5fe2bd4b86cd52c852cb4669e31fdf7e81"
+  integrity sha512-GaiWvo3rKIHi1SyYP8/9cDrPMPSwEiYDUo2p0NQHeCHDXzLn8P6p8bttSS3lX7HHS3Yl5vnw/ulybO4GN85CgQ==
+
 unique-slug@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/unique-slug/-/unique-slug-2.0.2.tgz#baabce91083fc64e945b0f3ad613e264f7cd4e6c"
@@ -12637,6 +12642,13 @@ xtend@^4.0.0, xtend@^4.0.2, xtend@~4.0.0, xtend@~4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
+
+y-indexeddb@^9.0.6:
+  version "9.0.6"
+  resolved "https://registry.yarnpkg.com/y-indexeddb/-/y-indexeddb-9.0.6.tgz#49aecac11bc229571fb134e0ec0717c0330b731f"
+  integrity sha512-8mdCYdzZDWS2lGiB9Reaz67ZqvnV6EXH/F7L+TmBC+3mWjIBrPw4UcI79nOhEOh+y9lHXzNpSda4YJ06M13F1A==
+  dependencies:
+    lib0 "^0.2.35"
 
 y-leveldb@^0.1.0:
   version "0.1.0"
